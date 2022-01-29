@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <climits>
 
-
 namespace ECS {
   enum class ComponentId {
     UNDEFINED = -1,
@@ -17,6 +16,7 @@ namespace ECS {
     ComponentId id_ = ComponentId::UNDEFINED;
    public:
     IComponent() = default;
+    ~IComponent() = default;
 
     ComponentId GetId() const;
   };
