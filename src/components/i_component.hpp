@@ -14,6 +14,8 @@ namespace ECS {
   class IComponent {
    protected:
     ComponentId id_ = ComponentId::UNDEFINED;
+
+    IComponent(ComponentId id);
    public:
     IComponent() = default;
     ~IComponent() = default;
@@ -23,3 +25,4 @@ namespace ECS {
 }
 
 #endif /* i_component.hpp*/
+

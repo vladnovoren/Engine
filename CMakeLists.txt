@@ -9,7 +9,7 @@ add_compile_options(
   -g
 
   #-fsanitize=address
-  
+
   -Werror
   -Wall
   -Wextra
@@ -35,6 +35,9 @@ set(GLIB_SOURCE src/glib/glib_clock/glib_clock.cpp
                 src/glib/glib_font/glib_font.cpp
 )
 
+set(ECS_SOURCE src/components/comp_velocity/comp_velocity.cpp
+               src/components/i_component.cpp)
+
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
 
@@ -53,11 +56,14 @@ ENDMACRO()
 HEADER_DIRECTORIES(header_dir_list)
 list(LENGTH header_dir_list header_dir_list_count)
 include_directories(${header_dir_list})
-include_directories(${header_dir_list})
 
 add_library(glib STATIC ${GLIB_SOURCE})
+add_library(ECS STATIC ${ECS_SOURCE})
 
 add_executable(Revenge src/main.cpp)
+add_executable(Test src/test/test.cpp)
 
 target_link_libraries(glib PUBLIC sfml-graphics)
 target_link_libraries(Revenge PUBLIC glib)
+target_link_libraries(ECS PUBLIC glib)
+target_link_libraries(Test PUBLIC ECS)
