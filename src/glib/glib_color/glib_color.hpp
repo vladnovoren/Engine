@@ -2,7 +2,7 @@
 #define COLOR_HPP
 
 
-#include "SFML/Graphics.hpp"
+#include <SFML/Graphics.hpp>
 #include "glib_color.hpp"
 
 
