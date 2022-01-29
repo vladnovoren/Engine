@@ -8,7 +8,8 @@ namespace ECS {
   enum class ComponentId {
     UNDEFINED = -1,
     POSITION,
-    VELOCITY
+    VELOCITY,
+    N_COMPONENTS
   };
 
   class IComponent {

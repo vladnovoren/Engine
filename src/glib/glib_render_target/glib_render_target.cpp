@@ -18,7 +18,9 @@ void glib::RenderTarget::Clear(const ColorRGBA& color) {
 void glib::RenderTarget::RenderLine(const glib::IntLine& line,
                                     const ColorRGBA& color,
                                     BlendMode blend_mode) {
-  FloatLine float_line(line.m_begin, line.m_end, line.m_thickness);
+  FloatLine float_line(Vector2f(line.m_begin.x, line.m_begin.y),
+                       Vector2f(line.m_end.x, line.m_end.y),
+                       line.m_thickness);
   glib::Vector2f normal = float_line.m_end - float_line.m_begin;
   normal.Rotate(M_PI / 2);
   normal.Resize(line.m_thickness);
