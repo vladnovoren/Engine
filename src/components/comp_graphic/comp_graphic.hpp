@@ -9,11 +9,15 @@
 namespace ECS {
   class GraphicComponent: public IComponent {
     protected:
-      glib::RenderTexture texture;
+      glib::RenderTexture texture_;
     public:
+      GraphicComponent();
+      ~GraphicComponent() = default;
+      
       const glib::RenderTexture& GetTexture() const;
       void SetTexture(const glib::Texture& other);
       void SetTexture(const glib::Texture& sprites, const glib::IntRect& rect);
   };
 }
+
 #endif /* comp_texture.hpp */
