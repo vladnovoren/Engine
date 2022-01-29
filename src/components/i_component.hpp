@@ -9,6 +9,7 @@ namespace ECS {
     UNDEFINED = -1,
     POSITION,
     VELOCITY,
+    GRAPHIC_COMPONENT,
     N_COMPONENTS
   };
 
