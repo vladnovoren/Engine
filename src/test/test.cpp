@@ -1,4 +1,5 @@
 #include "comp_velocity.hpp"
+#include "comp_position.hpp"
 
 int main() {
   ECS::Velocity velocity;
