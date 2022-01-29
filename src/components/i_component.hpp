@@ -22,5 +22,4 @@ namespace ECS {
   };
 }
 
-
 #endif /* i_component.hpp*/
