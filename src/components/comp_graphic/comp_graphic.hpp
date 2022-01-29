@@ -13,7 +13,7 @@ namespace ECS {
     public:
       GraphicComponent();
       ~GraphicComponent() = default;
-      
+
       const glib::RenderTexture& GetTexture() const;
       void SetTexture(const glib::Texture& other);
       void SetTexture(const glib::Texture& sprites, const glib::IntRect& rect);

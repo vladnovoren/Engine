@@ -37,7 +37,8 @@ set(GLIB_SOURCE src/glib/glib_clock/glib_clock.cpp
 
 set(ECS_SOURCE src/components/i_component.cpp
                src/components/comp_velocity/comp_velocity.cpp
-               src/components/comp_position/comp_position.cpp)
+               src/components/comp_position/comp_position.cpp
+               src/entities/entity.cpp)
 
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
