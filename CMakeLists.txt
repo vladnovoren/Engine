@@ -26,6 +26,7 @@ set(ECS_SOURCE src/ECS/components/i_component.cpp
                src/ECS/components/comp_velocity.cpp
                src/ECS/components/comp_position.cpp
                src/ECS/components/comp_graphics.cpp
+               src/ECS/components/comp_health.cpp
                src/ECS/entities/entity.cpp)
 
 MACRO(HEADER_DIRECTORIES return_list)
