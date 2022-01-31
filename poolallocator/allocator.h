@@ -62,8 +62,8 @@ class bucket {
 
   void set_block_free(std::size_t index, std::size_t n) noexcept; /*!< Removes labels from blocks that they are used */
 
-  std::byte *m_data{nullptr};   /*!< Actual memory for allocations */
-  std::byte *m_ledger{nullptr}; /*!< Reserves one bit per block to indicate whether it is in-use */
+  uint8_t *m_data{nullptr};   /*!< Actual memory for allocations */
+  uint8_t *m_ledger{nullptr}; /*!< Reserves one bit per block to indicate whether it is in-use */
 };
 
 /*!
@@ -72,7 +72,7 @@ class bucket {
  * @param ptr Pointer to the memory block
  */
 bool bucket::belongs(void *ptr) const noexcept {
-  const auto p = static_cast<const std::byte *>(ptr);
+  const auto p = static_cast<const uint8_t *>(ptr);
   const std::size_t dist = static_cast<std::size_t>(p - m_data);
 
   if (dist >= BlockCount)
@@ -85,7 +85,7 @@ bool bucket::belongs(void *ptr) const noexcept {
  * @param n Count of empty block
  * @return Position in bucket of the first free n blocks or position of the end of bucket
  */
-std::size_t bucket::find_contiguos_blocks(std::size_t n) const noexcept {
+std::size_t bucket::find_contiguous_blocks(std::size_t n) const noexcept {
   std::size_t index = 0;       /*!< Index for moving block */
   std::size_t exit_index = 0;  /*!< Position of the first free position in block */
   std::size_t count = 0;       /*!< Count of busy blocks in bucket */
@@ -98,7 +98,7 @@ std::size_t bucket::find_contiguos_blocks(std::size_t n) const noexcept {
       exit_index = 0;
     }
     /*! Checking the block's occupancy */
-    if (((*(m_ledger + block_index) >> index) & (std::byte)(1)) == (std::byte)(0)) {
+    if (((*(m_ledger + block_index) >> index) & (uint8_t)(1)) == (uint8_t)(0)) {
       count++;
     } else {
       count = 0;
@@ -119,7 +119,7 @@ std::size_t bucket::find_contiguos_blocks(std::size_t n) const noexcept {
  * @param index The initial position of the block
  * @param n Size of section
  */
-void set_block_in_use(std::size_t index, std::size_t n) noexcept {
+void bucket::set_block_in_use(std::size_t index, std::size_t n) noexcept {
   /*! Counting block index */
   std::size_t block_index = index / BlockSize;
   index %= BlockSize;
@@ -130,7 +130,7 @@ void set_block_in_use(std::size_t index, std::size_t n) noexcept {
       block_index = block_index + 1;
       index = 0;
     }
-    *(m_ledger + block_index) &= (~((std::byte)(1) << (index)));
+    *(m_ledger + block_index) &= (~((uint8_t)(1) << (index)));
     index++;
     count++;
   }
@@ -141,7 +141,7 @@ void set_block_in_use(std::size_t index, std::size_t n) noexcept {
  * @param index The initial position of the block
  * @param n Size of section
  */
-void bucket::set_blocks_free(std::size_t index, std::size_t n) noexcept {
+void bucket::set_block_free(std::size_t index, std::size_t n) noexcept {
   /*! Counting block index */
   std::size_t block_index = index / BlockSize;
   index %= BlockSize;
@@ -152,7 +152,7 @@ void bucket::set_blocks_free(std::size_t index, std::size_t n) noexcept {
       block_index = block_index + 1;
       index = 0;
     }
-    *(m_ledger + block_index) &= (~((std::byte)(1) << (index)));
+    *(m_ledger + block_index) &= (~((uint8_t)(1) << (index)));
     index++;
     count++;
   }
@@ -161,11 +161,11 @@ void bucket::set_blocks_free(std::size_t index, std::size_t n) noexcept {
 bucket::bucket(std::size_t block_size, std::size_t block_count) : BlockSize{block_size}, BlockCount{block_count} {
   /*! Calculating and allocating the pool size */
   const auto data_size = BlockCount * BlockSize;
-  m_data = static_cast<std::byte *>(std::malloc(data_size));
+  m_data = static_cast<uint8_t *>(std::malloc(data_size));
   assert(m_data != nullptr);
   /*! Allocating memory for markers of used blocks*/
-  const auto ledger_size = 1 + ((BlockCount - 1) / 8;
-  m_ledger = static_cast<std::byte*>(std::malloc(ledger_size));
+  const auto ledger_size = 1 + ((BlockCount - 1) / 8);
+  m_ledger = static_cast<uint8_t *>(std::malloc(ledger_size));
   assert(m_ledger != nullptr);
 
   std::memset(m_data, 0, data_size);
@@ -185,19 +185,19 @@ bucket::~bucket() {
     return nullptr;
   }
 
-  set_blocks_in_use(index, n);
+  set_block_in_use(index, n);
   return m_data + (index * BlockSize);
 }
 
 void bucket::deallocate(void *ptr, std::size_t bytes) noexcept {
-  const auto p = static_cast<const std::byte *>(ptr);
+  const auto p = static_cast<const uint8_t *>(ptr);
   const std::size_t dist = static_cast<std::size_t>(p - m_data);
 
   const auto index = dist / BlockSize;
 
   const auto n = 1 + ((bytes - 1) / BlockSize);
 
-  set_blocks_free(index, n);
+  set_block_free(index, n);
 }
 
 /**************************************************************************************************************/
@@ -378,18 +378,32 @@ class memory_pool {
 ╚═╝╚═╝░░░░░╚═╝╚═╝░░░░░╚══════╝╚══════╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░░░╚═╝░░░╚═╝░░╚═╝░░░╚═╝░░░╚═╝░╚════╝░╚═╝░░╚══╝
 */
 
+namespace instrument {
+template <std::size_t id, typename T, std::size_t size>
+void type_reg() {
+}
+};  // namespace instrument
+
 template <typename T = std::uint8_t, std::size_t id = 0>
 class static_pool_allocator {
  public:
+  typedef T *pointer;
+  typedef const T *const_pointer;
+  typedef T &reference;
+  typedef const T &const_reference;
+  typedef T value_type;
+  typedef size_t size_type;
+  typedef ptrdiff_t difference_type;
+
   template <typename U>
   struct rebind {
     using other = static_pool_allocator<U, id>;
   };
 
-  static_pool_allocator() noexcept : m_upstream_resource{pmr::get_default_resource()} {
+  static_pool_allocator() noexcept : m_upstream_resource{std::pmr::get_default_resource()} {
   }
 
-  static_pool_allocator(pmr::memory_resource *res) noexcept : m_upstream_resource{res} {
+  static_pool_allocator(std::pmr::memory_resource *res) noexcept : m_upstream_resource{res} {
   }
 
   template <typename U>
@@ -407,35 +421,29 @@ class static_pool_allocator {
     return memory_pool::initialize<id>();
   }
 
+  pointer allocate(size_type n, const void * = 0) {
+    instrument::type_reg<id, T, sizeof(T)>();
+    if constexpr (memory_pool::is_defined<id>()) {
+      return static_cast<T *>(memory_pool::allocate<id>(sizeof(T) * n));
+    } else if (m_upstream_resource != nullptr) {
+      return static_cast<T *>(m_upstream_resource->allocate(sizeof(T) * n, alignof(T)));
+    } else {
+      throw std::bad_alloc{};
+    }
+  }
+
+  void deallocate(T *ptr, size_type n) {
+    if constexpr (memory_pool::is_defined<id>()) {
+      memory_pool::deallocate<id>(ptr, sizeof(T) * n);
+    } else if (m_upstream_resource != nullptr) {
+      m_upstream_resource->deallocate(ptr, sizeof(T) * n, alignof(T));
+    } else {
+      assert(false);
+    }
+  }
+
  private:
-  pmr::memory_resource *m_upstream_resource;
+  std::pmr::memory_resource *m_upstream_resource;
 };
-
-namespace instrument {
-template <std::size_t id, typename T, std::size_t size>
-void type_reg() {
-}
-}  // namespace instrument
-
-pointer allocate(size_type n, const void * = 0) {
-  instrument::type_reg<id, T, sizeof(T)>();
-  if constexpr (memory_pool::is_defined<id>()) {
-    return static_cast<T *>(memory_pool::allocator<id>(sizeof(T) * n));
-  } else if (m_upstream_resource != nullptr) {
-    return static_cast<T *>(m_upstream_resource->allocate(sizeof(T) * n, alignof(T)));
-  } else {
-    throw std::bad_alloc{};
-  }
-}
-
-void deallocate(T *ptr, size_type n) {
-  if constexpr (memory_pool::is_defined<id>()) {
-    memory_pool::deallocate<id>(ptr, sizeof(T) * n);
-  } else if (m_upstream_resource != nullptr) {
-    m_upstream_resource->deallocate(ptr, sizeof(T) * n, alignof(T));
-  } else {
-    assert(false);
-  }
-}
 
 #endif  // !POOLALLOCATOR_H
