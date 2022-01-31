@@ -15,5 +15,5 @@ void ECS::GraphicComponent::SetTexture(const glib::Texture& other) {
 void ECS::GraphicComponent::SetTexture(const glib::Texture& sprites, const glib::IntRect& rect) {
     const glib::Vector2i& other_size{rect.m_position.x, rect.m_position.y};
     texture_.Resize(other_size);
-    texture_.CopyTexture(other, {0, 0}, rect);
+    texture_.CopyTexture(sprites, {0, 0}, rect);
 }
