@@ -22,13 +22,10 @@ add_link_options(
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(ECS_SOURCE src/components/i_component.cpp
-               src/components/comp_velocity/comp_velocity.cpp
-               src/components/comp_position/comp_position.cpp
-               src/entities/entity.cpp)
-
-find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
-
+set(ECS_SOURCE src/ECS/components/i_component.cpp
+               src/ECS/components/comp_velocity.cpp
+               src/ECS/components/comp_position.cpp
+               src/ECS/entities/entity.cpp)
 
 MACRO(HEADER_DIRECTORIES return_list)
     FILE(GLOB_RECURSE new_list *.hpp)
@@ -55,7 +52,6 @@ add_library(ECS STATIC ${ECS_SOURCE})
 add_executable(Revenge src/main.cpp)
 add_executable(Test src/test/test.cpp)
 
-target_link_libraries(glib PUBLIC sfml-graphics)
-target_link_libraries(Revenge PUBLIC glib)
 target_link_libraries(ECS PUBLIC glib)
 target_link_libraries(Test PUBLIC ECS)
+target_link_libraries(Revenge PUBLIC ECS)
