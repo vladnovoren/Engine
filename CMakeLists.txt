@@ -22,19 +22,6 @@ add_link_options(
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(GLIB_SOURCE src/glib/glib_clock/glib_clock.cpp
-                src/glib/glib_color/glib_color.cpp
-                src/glib/glib_events/glib_events.cpp
-                src/glib/glib_primitives/glib_primitives.cpp
-                src/glib/glib_render_target/glib_render_target.cpp
-                src/glib/glib_render_texture/glib_render_texture.cpp
-                src/glib/glib_render_window/glib_render_window.cpp
-                src/glib/glib_texture/glib_texture.cpp
-                src/glib/glib_tools/glib_tools.cpp
-                src/glib/glib_text/glib_text.cpp
-                src/glib/glib_font/glib_font.cpp
-)
-
 set(ECS_SOURCE src/components/i_component.cpp
                src/components/comp_velocity/comp_velocity.cpp
                src/components/comp_position/comp_position.cpp
@@ -57,9 +44,12 @@ ENDMACRO()
 
 HEADER_DIRECTORIES(header_dir_list)
 list(LENGTH header_dir_list header_dir_list_count)
+
+add_subdirectory(glib/)
+
 include_directories(${header_dir_list})
 
-add_library(glib STATIC ${GLIB_SOURCE})
+
 add_library(ECS STATIC ${ECS_SOURCE})
 
 add_executable(Revenge src/main.cpp)
