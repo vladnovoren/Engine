@@ -10,7 +10,7 @@ void ECS::Entity::SetComponent(IComponent* component) {
   assert(component != nullptr);
 
   int id = static_cast<int>(component->GetId());
-  if (id < 0 || id >= (int)ComponentId::N_COMPONENTS) {
+  if (id < 0 || id >= static_cast<int>(ComponentId::N_COMPONENTS)) {
     throw std::out_of_range("Bad component id");
   }
   components_[static_cast<size_t>(component->GetId())] = component;
@@ -18,7 +18,7 @@ void ECS::Entity::SetComponent(IComponent* component) {
 
 ECS::IComponent* ECS::Entity::GetComponent(ComponentId id) {
   int i_id = static_cast<int>(id);
-  if (i_id < 0 || i_id >= (int)ComponentId::N_COMPONENTS) {
+  if (i_id < 0 || i_id >= static_cast<int>(ComponentId::N_COMPONENTS)) {
     throw std::out_of_range("Bad component id");
   }
   return components_[i_id];
