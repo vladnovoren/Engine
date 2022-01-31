@@ -17,7 +17,7 @@ namespace texture_pack {
 
       const glib::Texture& GetSprites() const;
       const glib::IntRect& GetRect(size_t action_index, size_t frame_index) const;
-
+      size_t GetFramesNumber(size_t action_index) const;
   };
 }
 
