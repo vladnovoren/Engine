@@ -28,6 +28,8 @@ set(ECS_SOURCE src/ECS/components/i_component.cpp
                src/ECS/components/comp_graphics.cpp
                src/ECS/entities/entity.cpp)
 
+set(TEXTURE_PACK_SOURCE src/texture_pack/texture_pack.cpp)
+
 MACRO(HEADER_DIRECTORIES return_list)
     FILE(GLOB_RECURSE new_list *.hpp)
     SET(dir_list "")
@@ -49,10 +51,12 @@ include_directories(${header_dir_list})
 
 
 add_library(ECS STATIC ${ECS_SOURCE})
+add_library(TEXTURE_PACK STATIC ${TEXTURE_PACK_SOURCE})
 
 add_executable(Revenge src/main.cpp)
 add_executable(Test src/test/test.cpp)
 
 target_link_libraries(ECS PUBLIC glib)
+target_link_libraries(TEXTURE_PACK PUBLIC glib)
 target_link_libraries(Test PUBLIC ECS)
 target_link_libraries(Revenge PUBLIC ECS)
