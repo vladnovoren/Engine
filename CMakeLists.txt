@@ -46,10 +46,10 @@ add_subdirectory(glib/)
 include_directories(${header_dir_list})
 
 
-add_library(ECS STATIC ${ECS_SOURCE})
+add_library(ECS STATIC ${ECS_SOURCE} "poolallocator/bucket.h")
 
-add_executable(Revenge src/main.cpp)
-add_executable(Test src/test/test.cpp)
+add_executable(Revenge src/main.cpp "poolallocator/bucket.h")
+add_executable(Test src/test/test.cpp "poolallocator/bucket.h")
 
 target_link_libraries(ECS PUBLIC glib)
 target_link_libraries(Test PUBLIC ECS)
