@@ -53,3 +53,11 @@ const glib::IntRect& texture_pack::TexturePack::GetRect(size_t action_index, siz
 const glib::Texture& texture_pack::TexturePack::GetSprites() const {
     return sprites_;
 }
+
+size_t texture_pack::TexturePack::GetFramesNumber(size_t action_index) const {
+    if (action_index >= actions_.size()) {
+        throw std::out_of_range("Action index is out of range");
+        // TODO: log
+    }
+    return actions_[action_index].size();
+}
