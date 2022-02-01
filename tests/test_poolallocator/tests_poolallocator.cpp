@@ -13,6 +13,16 @@ TEST(TestCaseName, TestName) {
 }
 */
 
+TEST(BucketTestsSystem, static_pool) {
+  static constexpr auto AllocId = 1;
+  using list = std::list<int, static_pool_allocator<int, AllocId>>;
+  using vector = std::vector<list, static_pool_allocator<list, AllocId>>;
+  vector v;
+  v.emplace_back(5u, 42);
+  EXPECT_EQ(v.size(), 5);
+  std::cout << "hello";
+}
+
 TEST(BucketTestsSystem, Bucket) {
   bucket test_bucket(8, 3);
   uint8_t* p = NULL;

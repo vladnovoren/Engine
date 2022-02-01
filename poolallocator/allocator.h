@@ -292,6 +292,7 @@ auto &get_instance() noexcept {
 */
 
 class memory_pool {
+ public:
   struct info {
     std::size_t index{0};
     std::size_t block_count{0};
@@ -302,12 +303,12 @@ class memory_pool {
     }
   };
 
-  bool cmp(const info &a, const info &b) {
+  static bool cmp(const info &a, const info &b) {
     return a < b;
   }
 
   template <std::size_t id>
-  [[nodiscard]] void *allocate(std::size_t bytes) {
+  [[nodiscard]] static void *allocate(std::size_t bytes) {
     auto &pool = get_instance<id>();
     std::array<info, bucket_count<id>> deltas;
     std::size_t index = 0;
@@ -333,7 +334,7 @@ class memory_pool {
   }
 
   template <std::size_t id>
-  void deallocate(void *ptr, std::size_t bytes) noexcept {
+  static void deallocate(void *ptr, std::size_t bytes) noexcept {
     auto &pool = get_instance<id>();
     for (auto &bucket : pool) {
       if (bucket.belongs(ptr)) {
@@ -344,12 +345,12 @@ class memory_pool {
   }
 
   template <size_t id>
-  constexpr bool is_defined() noexcept {
+  static constexpr bool is_defined() noexcept {
     return bucket_count<id> != 0;
   }
 
   template <size_t id>
-  bool initialize() noexcept {
+  static bool initialize() noexcept {
     (void)get_instance<id>();
     return is_defined<id>();
   }
@@ -408,12 +409,12 @@ class static_pool_allocator {
 
   template <typename U>
   static_pool_allocator(const static_pool_allocator<U, id> &other) noexcept
-      : m_upstream_resource{other.upstream_resource()} {
+      : m_upstream_resource{other.m_upstream_resource} {
   }
 
   template <typename U>
   static_pool_allocator &operator=(const static_pool_allocator<U, id> &other) noexcept {
-    m_upstream_resource = other.upstream_resource();
+    m_upstream_resource = other.m_upstream_resource;
     return *this;
   }
 
@@ -421,28 +422,34 @@ class static_pool_allocator {
     return memory_pool::initialize<id>();
   }
 
-  pointer allocate(size_type n, const void * = 0) {
-    instrument::type_reg<id, T, sizeof(T)>();
-    if constexpr (memory_pool::is_defined<id>()) {
-      return static_cast<T *>(memory_pool::allocate<id>(sizeof(T) * n));
-    } else if (m_upstream_resource != nullptr) {
-      return static_cast<T *>(m_upstream_resource->allocate(sizeof(T) * n, alignof(T)));
-    } else {
-      throw std::bad_alloc{};
-    }
+  bool operator==(const static_pool_allocator<T, id> &) {
+    return true;
   }
 
-  void deallocate(T *ptr, size_type n) {
-    if constexpr (memory_pool::is_defined<id>()) {
-      memory_pool::deallocate<id>(ptr, sizeof(T) * n);
-    } else if (m_upstream_resource != nullptr) {
-      m_upstream_resource->deallocate(ptr, sizeof(T) * n, alignof(T));
-    } else {
-      assert(false);
-    }
+  bool operator!=(const static_pool_allocator<T, id> &other) {
+    return !(*this == other);
   }
 
- private:
+pointer allocate(size_type n, const void * = 0) {
+  instrument::type_reg<id, T, sizeof(T)>();
+  if constexpr (memory_pool::is_defined<id>()) {
+    return static_cast<T *>(memory_pool::allocate<id>(sizeof(T) * n));
+  } else if (m_upstream_resource != nullptr) {
+    return static_cast<T *>(m_upstream_resource->allocate(sizeof(T) * n, alignof(T)));
+  } else {
+    throw std::bad_alloc{};
+  }
+}
+
+void deallocate(T *ptr, size_type n) {
+  if constexpr (memory_pool::is_defined<id>()) {
+    memory_pool::deallocate<id>(ptr, sizeof(T) * n);
+  } else if (m_upstream_resource != nullptr) {
+    m_upstream_resource->deallocate(ptr, sizeof(T) * n, alignof(T));
+  } else {
+    assert(false);
+  }
+}
   std::pmr::memory_resource *m_upstream_resource;
 };
 
