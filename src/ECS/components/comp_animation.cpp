@@ -9,9 +9,9 @@ size_t ECS::AnimationInfo::GetFrameIndex() const {
 }
 
 void ECS::AnimationInfo::SetActionIndex(size_t new_index) {
-    action_index_ = new_index;
+  action_index_ = new_index;
 }
 
 void ECS::AnimationInfo::SetFrameIndex(size_t new_index) {
-    frame_index_ = new_index;
+  frame_index_ = new_index;
 }
