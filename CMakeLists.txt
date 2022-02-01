@@ -43,7 +43,6 @@ HEADER_DIRECTORIES(header_dir_list)
 list(LENGTH header_dir_list header_dir_list_count)
 
 add_subdirectory(glib/)
-
 include_directories(${header_dir_list})
 
 
