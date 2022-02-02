@@ -29,6 +29,8 @@ set(ECS_SOURCE src/ECS/components/i_component.cpp
                src/ECS/components/comp_health.cpp
                src/ECS/entities/entity.cpp)
 
+set(LOGGING_SOURCE src/logging.cpp)
+
 set(TEXTURE_PACK_SOURCE src/texture_pack/texture_pack.cpp)
 
 MACRO(HEADER_DIRECTORIES return_list)
@@ -52,11 +54,12 @@ include_directories(${header_dir_list})
 
 add_library(ECS STATIC ${ECS_SOURCE})
 add_library(TEXTURE_PACK STATIC ${TEXTURE_PACK_SOURCE})
+add_library(LOGGING STATIC ${LOGGING_SOURCE})
 
 add_executable(Revenge src/main.cpp)
 add_executable(Test src/test/test.cpp)
 
-target_link_libraries(ECS PUBLIC glib)
-target_link_libraries(TEXTURE_PACK PUBLIC glib)
-target_link_libraries(Test PUBLIC ECS)
-target_link_libraries(Revenge PUBLIC ECS)
+target_link_libraries(ECS PUBLIC glib LOGGING)
+target_link_libraries(TEXTURE_PACK PUBLIC glib LOGGING)
+target_link_libraries(Test PUBLIC ECS LOGGING)
+target_link_libraries(Revenge PUBLIC ECS LOGGING)
