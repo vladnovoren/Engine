@@ -1,1 +1,1 @@
-# Simple 2D-shooter
+# Simple 2D-engine
